@@ -1,0 +1,26 @@
+<?php
+  // $Id:
+  
+  /**
+ * Implement hook_install().
+ */
+  function new_relic_rpm_install() {
+    
+  }
+
+  /**
+   * Implement hook_uninstall().
+   */
+  function new_relic_rpm_uninstall() {
+
+    // Remove variables.
+    variable_del('new_relic_rpm_track_cron');
+    variable_del('new_relic_rpm_ignore_urls');
+    variable_del('new_relic_rpm_bg_urls');
+    variable_del('new_relic_rpm_exclusive_urls');
+    variable_del('new_relic_rpm_api_key');
+    variable_del('new_relic_rpm_module_deployment');
+    variable_del('new_relic_rpm_app_name');
+
+  }
+  
