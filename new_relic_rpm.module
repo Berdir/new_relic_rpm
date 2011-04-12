@@ -51,7 +51,7 @@ function new_relic_rpm_form_system_modules_alter(&$form, &$form_state) {
 
     $api_key = variable_get('new_relic_rpm_api_key', '');
     // If the API Key and/or App name is/are not set, there is no sense in attempting to create deployments.
-    if (strlen($api_key) > 0) {
+    if (!empty($api_key)) {
       // We need our module check to run first--before the actuall install is done by Drupal.
       $form['#submit'][-1000] = 'new_relic_rpm_modules_enabled';
       ksort($form['#submit']);
@@ -132,7 +132,6 @@ function new_relic_rpm_modules_enabled($form, &$form_state) {
 function new_relic_rpm_module_deploy($new_modules, $disable_modules) {
   $modules_installed = !empty($new_modules);
   $modules_removed = !empty($disable_modules);
-  $api_key = variable_get('new_relic_rpm_api_key', '');
 
   if ($modules_installed) {
     $m_inst = 'Modules Installed: ' . implode(', ', $new_modules ) . "\n";
@@ -152,7 +151,7 @@ function new_relic_rpm_module_deploy($new_modules, $disable_modules) {
   $post_vars['deployment[user]'] = 'Drupal Module Install/Uninstall';
   $post_vars['deployment[description]'] = 'Drupal modules were installed: ' . ($modules_installed ? 'YES' : 'NO') . ' and uninstalled: ' . ($modules_removed ? 'YES' : 'NO');
   $post_vars['deployment[changelog]'] = $m_inst . $m_remv;
-  $deployments = new_relic_rpm_curl('https://rpm.newrelic.com/deployments.xml', $api_key, $post_vars);
+  $deployments = new_relic_rpm_curl('https://rpm.newrelic.com/deployments.xml', $post_vars);
 
   watchdog('New Relic RPM', 'Module install/uninstall action logged as deployment. Log data: %details', array('%details' => $deployments));
 }
@@ -239,7 +238,9 @@ function new_relic_rpm_perm() {
 /**
  * This is the generic cURL function all New Relic Web API calls go through.
  */
-function new_relic_rpm_curl($url, $api_key, $post = array()) {
+function new_relic_rpm_curl($url, $post = array()) {
+
+  $api_key = variable_get('new_relic_rpm_api_key', '');
 
   // Set the header with the API key.
   $headers[] = "http-x-license-key: {$api_key}";
