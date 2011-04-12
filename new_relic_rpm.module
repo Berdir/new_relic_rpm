@@ -357,6 +357,7 @@ function new_relic_rpm_init() {
  */
 function new_relic_rpm_help($path, $arg) {
   $output = '';
+  /*
   switch ($path) {
     case 'admin/settings/new-relic-rpm':
       $output .= '<p>TODO</p>';
@@ -368,6 +369,7 @@ function new_relic_rpm_help($path, $arg) {
       $output .= '<p>TODO</p>';
       break;
   }
+  */
 
   return $output;
 }
