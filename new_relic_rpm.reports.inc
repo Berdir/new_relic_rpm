@@ -40,20 +40,21 @@ function new_relic_rpm_reporting_details($cust_id, $app_id) {
 
   $output = '';
 
-  // If no API key is set, break here and error out
+  // If no API key is set, break here and error out.
   $api_key = variable_get('new_relic_rpm_api_key', '');
   if (empty($api_key)) {
     drupal_set_message(t('You need to enter your New Relic API key from your New Relic account settings page before you are able to view reports within Drupal. Visit the <a href="!settings">New Relic RPM Drupal admin page<a/> to enter your API key.', array('!settings' => url('admin/settings/new-relic-rpm'))), 'error');
     return '<h2>' . t('No API key found.') . '</h2>';
   }
 
-  // Only hit the REST API every 60 seconds
+  // Only hit the REST API every 60 seconds.
   if ($_SESSION['new_relic_rpm_dash_time'] < $_SERVER['REQUEST_TIME'] - 60 || !$_SESSION['new_relic_rpm_dash_xml']) {
     $app_dashboard = new_relic_rpm_curl('https://rpm.newrelic.com/application_dashboard?application_id=' . $app_id);
   }
   else {
     $app_dashboard = $_SESSION['new_relic_rpm_dash_xml'];
   }
+
   // Error out if value is false, save cached copy of XML if it is good.
   if (!$app_dashboard) {
     drupal_set_message(t('The New Relic REST API has denied your key. Either the key you entered on the <a href="!settings">New Relic RPM Drupal admin page</a> is incorrect, or you have not enabled API access for this application within the New Relic RPM webiste.', array('!settings' => url('admin/settings/new-relic-rpm'))), 'error');

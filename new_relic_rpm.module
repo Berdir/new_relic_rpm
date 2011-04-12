@@ -120,7 +120,7 @@ function new_relic_rpm_modules_enabled($form, &$form_state) {
   $new_modules = array_diff(array_merge($enable_modules, $new_modules), $old_module_list);
   $disable_modules = array_intersect($disable_modules, $old_module_list);
 
-  // Make the Deploy call to New Relic
+  // Make the Deploy call to New Relic.
   if (!empty($new_modules) || !empty($disable_modules)) {
     new_relic_rpm_module_deploy($new_modules, $disable_modules);
   }
@@ -174,7 +174,7 @@ function new_relic_rpm_cron() {
 /**
  * Implementation of hook_init().
  *
- * This is used to set various RPM settings by URL
+ * This is used to set various RPM settings by URL.
  */
 function new_relic_rpm_init() {
 
@@ -245,7 +245,7 @@ function new_relic_rpm_curl($url, $post = array()) {
   // Set the header with the API key.
   $headers[] = "http-x-license-key: {$api_key}";
 
-  // Set up the cURL request
+  // Set up the cURL request.
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
