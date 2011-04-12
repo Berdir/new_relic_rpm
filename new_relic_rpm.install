@@ -1,26 +1,36 @@
 <?php
-  // $Id:
-  
-  /**
+
+/**
  * Implement hook_install().
  */
-  function new_relic_rpm_install() {
-    
+function new_relic_rpm_install() {
+
+}
+
+/**
+ * Implemenation of hook enable().
+ *
+ * This checks for the existence of the New Relic RPM PHP extension by checking
+ * for functions. If it is not found, the module is uninstalled.
+ */
+function new_relic_rpm_enable() {
+  if (!function_exists('newrelic_background_job')) {
+    drupal_set_message('The New Relic RPM PHP extension is missing. This extension must be installed and functional on your server before this module can be enabled. Visit '.l('the New Relic RPM installation guide','http://support.newrelic.com/kb/docs/php-agent').' for assistance','error');
+    module_disable(array('new_relic_rpm'));
   }
+}
 
-  /**
-   * Implement hook_uninstall().
-   */
-  function new_relic_rpm_uninstall() {
+/**
+ * Implement hook_uninstall().
+ */
+function new_relic_rpm_uninstall() {
 
-    // Remove variables.
-    variable_del('new_relic_rpm_track_cron');
-    variable_del('new_relic_rpm_ignore_urls');
-    variable_del('new_relic_rpm_bg_urls');
-    variable_del('new_relic_rpm_exclusive_urls');
-    variable_del('new_relic_rpm_api_key');
-    variable_del('new_relic_rpm_module_deployment');
-    variable_del('new_relic_rpm_app_name');
-
-  }
-  
+  // Remove variables.
+  variable_del('new_relic_rpm_track_cron');
+  variable_del('new_relic_rpm_ignore_urls');
+  variable_del('new_relic_rpm_bg_urls');
+  variable_del('new_relic_rpm_exclusive_urls');
+  variable_del('new_relic_rpm_api_key');
+  variable_del('new_relic_rpm_module_deployment');
+  variable_del('new_relic_rpm_app_name');
+}
