@@ -8,8 +8,8 @@ function new_relic_rpm_reporting() {
   // If no API key is set, break here and error out.
   $api_key = variable_get('new_relic_rpm_api_key', '');
   if (!$api_key) {
-    drupal_set_message('You need to enter your New Relic API key from your New Relic account settings page before you are able to view reports within Drupal. Visit the '.l('New Relic RPM Drupal admin page', 'admin/settings/new-relic-rpm').' to enter your API key.', 'error');
-    return '<h2>No API key found.</h2>';
+    drupal_set_message(t('You need to enter your New Relic API key from your New Relic account settings page before you are able to view reports within Drupal. Visit the <a href="!settings">New Relic RPM Drupal admin page</a> to enter your API key.', array('!settings' => url('admin/settings/new-relic-rpm'))), 'error');
+    return '<h2>' . t('No API key found.') . '</h2>';
   }
 
   // Get basic app health. This is also our first check for a bad key/access denied.
@@ -22,8 +22,8 @@ function new_relic_rpm_reporting() {
   }
   // Error out of the return is False, store data if it is good.
   if (!$app_health) {
-    drupal_set_message('The New Relic REST API has denied your key. Either the key you entered on the '.l('New Relic RPM Drupal admin page', 'admin/settings/new-relic-rpm').' is incorrect, or you have not enabled API access for this application within the New Relic RPM webiste.', 'error');
-    return '<h2>API access denied.</h2>';
+    drupal_set_message(t('The New Relic REST API has denied your key. Either the key you entered on the <a href="!settings">New Relic RPM Drupal admin page</a> is incorrect, or you have not enabled API access for this application within the New Relic RPM webiste.', array('!settings' => url('admin/settings/new-relic-rpm'))), 'error');
+    return '<h2>' . t('API access denied.') . '</h2>';
   }
   else {
     $_SESSION['new_relic_rpm_health_time'] = $_SERVER['REQUEST_TIME'];
@@ -43,21 +43,21 @@ function new_relic_rpm_reporting_details($cust_id, $app_id) {
   // If no API key is set, break here and error out
   $api_key = variable_get('new_relic_rpm_api_key', '');
   if (!$api_key) {
-    drupal_set_message('You need to enter your New Relic API key from your New Relic account settings page before you are able to view reports within Drupal. Visit the '.l('New Relic RPM Drupal admin page', 'admin/settings/new-relic-rpm').' to enter your API key.', 'error');
-    return '<h2>No API key found.</h2>';
+    drupal_set_message(t('You need to enter your New Relic API key from your New Relic account settings page before you are able to view reports within Drupal. Visit the <a href="!settings">New Relic RPM Drupal admin page<a/> to enter your API key.', array('!settings' => url('admin/settings/new-relic-rpm'))), 'error');
+    return '<h2>' . t('No API key found.') . '</h2>';
   }
 
   // Only hit the REST API every 60 seconds
   if ($_SESSION['new_relic_rpm_dash_time'] < $_SERVER['REQUEST_TIME'] - 60 || !$_SESSION['new_relic_rpm_dash_xml']) {
-    $app_dashboard = new_relic_rpm_curl('https://rpm.newrelic.com/application_dashboard?application_id='.$app_id, $api_key);
+    $app_dashboard = new_relic_rpm_curl('https://rpm.newrelic.com/application_dashboard?application_id=' . $app_id, $api_key);
   }
   else {
     $app_dashboard = $_SESSION['new_relic_rpm_dash_xml'];
   }
   // Error out if value is false, save cached copy of XML if it is good.
   if (!$app_dashboard) {
-    drupal_set_message('The New Relic REST API has denied your key. Either the key you entered on the '.l('New Relic RPM Drupal admin page', 'admin/settings/new-relic-rpm').' is incorrect, or you have not enabled API access for this application within the New Relic RPM webiste.', 'error');
-    return '<h2>API access denied.</h2>';
+    drupal_set_message(t('The New Relic REST API has denied your key. Either the key you entered on the <a href="!settings">New Relic RPM Drupal admin page</a> is incorrect, or you have not enabled API access for this application within the New Relic RPM webiste.', array('!settings' => url('admin/settings/new-relic-rpm'))), 'error');
+    return '<h2>' . t('API access denied.') . '</h2>';
   }
   else {
     $_SESSION['new_relic_rpm_dash_time'] = $_SERVER['REQUEST_TIME'];

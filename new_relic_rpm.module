@@ -45,65 +45,65 @@ function new_relic_rpm_settings(&$form_state) {
 
   $form['ignore_cron'] = array(
     '#type' => 'select',
-    '#title' => 'Cron transactions',
-    '#description' => 'How do you wish RPM to track cron tasks?',
+    '#title' => t('Cron transactions'),
+    '#description' => t('How do you wish RPM to track cron tasks?'),
     '#options' => array(
-      'ignore' => 'Ignore completely',
-      'bg' => 'Track as background tasks',
-      'norm' => 'Track normally',
+      'ignore' => t('Ignore completely'),
+      'bg' => t('Track as background tasks'),
+      'norm' => t('Track normally'),
     ),
     '#default_value' => variable_get('new_relic_rpm_track_cron', 'norm'),
   );
 
   $form['module_deployment'] = array(
     '#type' => 'select',
-    '#title' => 'Track module activation as deployment',
-    '#description' => 'Turnign this on will create a "deployment" on the New Relic RPM dashboard each time a module is enabled or disabled. This will help you track before and after statistics.',
+    '#title' => t('Track module activation as deployment'),
+    '#description' => t('Turning this on will create a "deployment" on the New Relic RPM dashboard each time a module is enabled or disabled. This will help you track before and after statistics.'),
     '#options' => array(
-      '1' => 'Enable',
-      '0' => 'Disable',
+      '1' => t('Enable'),
+      '0' => t('Disable'),
     ),
     '#default_value' => variable_get('new_relic_rpm_module_deployment', 0),
   );
 
   $form['application_name'] = array(
     '#type' => 'textfield',
-    '#title' => 'Application Name',
-    '#description' => "If you are tracking/entering deployments via the Drupal UI, you will need to enter the *exact* RPM Application Name you have entered for the application that encompasses this Drupal installation on New Relic's website.",
+    '#title' => t('Application Name'),
+    '#description' => t("If you are tracking/entering deployments via the Drupal UI, you will need to enter the *exact* RPM Application Name you have entered for the application that encompasses this Drupal installation on New Relic's website."),
     '#default_value' => variable_get('new_relic_rpm_app_name', ''),
   );
 
   $form['ignore_urls'] = array(
     '#type' => 'textarea',
-    '#title' => 'Ignore URLs',
-    '#description' => 'Enter URLs you wish New Relic RPM to ignore. Enter one URL per line.',
+    '#title' => t('Ignore URLs'),
+    '#description' => t('Enter URLs you wish New Relic RPM to ignore. Enter one URL per line.'),
     '#default_value' => variable_get('new_relic_rpm_ignore_urls', ''),
   );
 
   $form['bg_urls'] = array(
     '#type' => 'textarea',
-    '#title' => 'Background URLs',
-    '#description' => 'Enter URLs you wish to have tracked as background tasks. Enter one URL per line.',
+    '#title' => t('Background URLs'),
+    '#description' => t('Enter URLs you wish to have tracked as background tasks. Enter one URL per line.'),
     '#default_value' => variable_get('new_relic_rpm_bg_urls', ''),
   );
 
   $form['exclusive_urls'] = array(
     '#type' => 'textarea',
-    '#title' => 'Exclusive URLs',
-    '#description' => 'Enter URLs you wish exclusively track. This is usefull for debugging specific issues. **NOTE** Entering URLs here effectively marks all other URLs as ignored. Leave blank to disable.',
+    '#title' => t('Exclusive URLs'),
+    '#description' => t('Enter URLs you wish exclusively track. This is usefull for debugging specific issues. **NOTE** Entering URLs here effectively marks all other URLs as ignored. Leave blank to disable.'),
     '#default_value' => variable_get('new_relic_rpm_exclusive_urls', ''),
   );
 
   $form['api_key'] = array(
     '#type' => 'textfield',
-    '#title' => 'API Key',
-    '#description' => 'Enter your New Relic API key if you wish to view reports and analysis within Drupal',
+    '#title' => t('API Key'),
+    '#description' => t('Enter your New Relic API key if you wish to view reports and analysis within Drupal'),
     '#default_value' => variable_get('new_relic_rpm_api_key', ''),
   );
 
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => 'Save Settings',
+    '#value' => t('Save Settings'),
   );
 
   return $form;
@@ -121,7 +121,7 @@ function new_relic_rpm_settings_submit($form, &$form_state) {
   variable_set('new_relic_rpm_api_key', $v['api_key']);
   variable_set('new_relic_rpm_module_deployment', $v['module_deployment']);
   variable_set('new_relic_rpm_app_name', $v['application_name']);
-  drupal_set_message('New Relic RPM settings saved.', 'status');
+  drupal_set_message(t('New Relic RPM settings saved.'), 'status');
 }
 
 /**
@@ -132,32 +132,32 @@ function new_relic_rpm_deploy(&$form_state) {
 
   $form['deploy_user'] = array(
     '#type' => 'textfield',
-    '#title' => 'Deployer/Deployment Name',
+    '#title' => t('Deployer/Deployment Name'),
     '#required' => TRUE,
-    '#description' => 'Enter the name for this depolyment of your application. This will be the name shown in your list of deployments on the New Relic RPM website.',
+    '#description' => t('Enter the name for this deployment of your application. This will be the name shown in your list of deployments on the New Relic RPM website.'),
   );
 
   $form['deploy_description'] = array(
     '#type' => 'textarea',
-    '#title' => 'Deployment Description',
-    '#description' => 'Provide some notes and description regarding this deployment.',
+    '#title' => t('Deployment Description'),
+    '#description' => t('Provide some notes and description regarding this deployment.'),
   );
 
   $form['deploy_changelog'] = array(
     '#type' => 'textarea',
-    '#title' => 'Deployment Changelog',
-    '#description' => 'Provide a specific changelog for this deployment.',
+    '#title' => t('Deployment Changelog'),
+    '#description' => t('Provide a specific changelog for this deployment.'),
   );
 
   $form['deploy_revision'] = array(
     '#type' => 'textfield',
-    '#title' => 'Deployment Revision',
-    '#description' => 'Add a revision number to this deployment.',
+    '#title' => t('Deployment Revision'),
+    '#description' => t('Add a revision number to this deployment.'),
   );
 
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => 'Create Deployment',
+    '#value' => t('Create Deployment'),
   );
 
   return $form;
@@ -177,13 +177,13 @@ function new_relic_rpm_deploy_submit($form, &$form_state) {
   $post_vars['deployment[revision]'] = $v['deploy_revision'];
   $deployments = new_relic_rpm_curl('https://rpm.newrelic.com/deployments.xml', $api_key, $post_vars);
   if (strlen($deployments)>20) {
-    drupal_set_message('New Relic RPM deployment created successfully', 'status');
+    drupal_set_message(t('New Relic RPM deployment created successfully'), 'status');
   }
   else {
-    drupal_set_message('New Relic RPM deployment failed to be created. Please ensure you have your account configured on the '.l('New Relic RPM Drupal admin page', 'admin/settings/new-relic-rpm').'.', 'error');
+    drupal_set_message(t('New Relic RPM deployment failed to be created. Please ensure you have your account configured on the <a href="!settings">New Relic RPM Drupal admin page</a>.', array('!settings' => url('admin/settings/new-relic-rpm'))), 'error');
   }
 
-  watchdog('New Relic RPM', 'Module install/uninstall action logged as deployment. Log data: ' . htmlentities($deployments));
+  watchdog('New Relic RPM', t('Module install/uninstall action logged as deployment. Log data: %details', array('%details' => $deployments)));
 }
 
 /**
@@ -197,7 +197,7 @@ function new_relic_rpm_form_alter(&$form, &$form_state, $form_id) {
       variable_get('new_relic_rpm_app_name', FALSE)) {
 
     $api_key = variable_get('new_relic_rpm_api_key', '');
-    // If the API Key and/or App name is/are not set, there is no sense in attempting to create deployments
+    // If the API Key and/or App name is/are not set, there is no sense in attempting to create deployments.
     if (strlen($api_key) > 0) {
       // We need our module check to run first--before the actuall install is done by Drupal.
       $form['#submit'][-1000] = 'new_relic_rpm_modules_enabled';
@@ -212,7 +212,7 @@ function new_relic_rpm_form_alter(&$form, &$form_state, $form_id) {
  *
  * Because we need to determine which modules Drupal is going to install, we
  * are going to perform the same actions as the actual module install process,
- * minus the actual installation of the modules
+ * minus the actual installation of the modules.
  */
 function new_relic_rpm_modules_enabled($form, &$form_state) {
   include_once './includes/install.inc';
@@ -301,13 +301,13 @@ function new_relic_rpm_module_deploy($new_modules, $disable_modules) {
   $post_vars['deployment[changelog]'] = $m_inst . $m_remv;
   $deployments = new_relic_rpm_curl('https://rpm.newrelic.com/deployments.xml', $api_key, $post_vars);
 
-  watchdog('New Relic RPM', 'Module install/uninstall action logged as deployment. Log data: ' . htmlentities($deployments));
+  watchdog('New Relic RPM', 'Module install/uninstall action logged as deployment. Log data: %details', array('%details' => $deployments));
 }
 
 /**
  * Implementation of hook_cron().
  *
- * This is used to set cron tasks to be not tracked by RPM if so desired
+ * This is used to set cron tasks to be not tracked by RPM if so desired.
  */
 function new_relic_rpm_cron() {
   $cron_tracking = variable_get(new_relic_rpm_track_cron, 'norm');
