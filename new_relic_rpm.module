@@ -44,9 +44,9 @@ function new_relic_rpm_menu() {
  *
  * Add a submit action to the system_module enable/disable form
  */
-function new_relic_rpm_form_alter(&$form, &$form_state, $form_id) {
-  if ($form_id == 'system_modules' &&
-      variable_get('new_relic_rpm_module_deployment', FALSE) &&
+function new_relic_rpm_form_system_modules_alter(&$form, &$form_state) {
+
+  if (variable_get('new_relic_rpm_module_deployment', FALSE) &&
       variable_get('new_relic_rpm_app_name', FALSE)) {
 
     $api_key = variable_get('new_relic_rpm_api_key', '');
