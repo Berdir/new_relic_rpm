@@ -90,7 +90,7 @@ function new_relic_rpm_modules_enabled($form, &$form_state) {
 
   // Return if there are dependencies and they were not yet confirmed.
   if ($dependencies && !isset($form_state['values']['confirm'])) {
-      return;
+    return;
   }
 
   // Dependencies are covered. Drupal is going to install modules. Find out which.
