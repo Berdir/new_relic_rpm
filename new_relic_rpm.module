@@ -76,19 +76,19 @@ function new_relic_rpm_boot() {
   $exclu_urls = variable_get('new_relic_rpm_exclusive_urls', '');
 
   if (!empty($exclu_urls)) {
-    if (!drupal_match_path($_GET['q'], $exclu_urls)) {
+    if (!new_relic_rpm_page_match($_GET['q'], $exclu_urls)) {
       return new_relic_rpm_set_job_state('ignore');
     }
   }
 
   if (!empty($ignore_urls)) {
-    if (drupal_match_path($_GET['q'], $ignore_urls)) {
+    if (new_relic_rpm_page_match($_GET['q'], $ignore_urls)) {
       return new_relic_rpm_set_job_state('ignore');
     }
   }
 
   if (!empty($bg_urls)) {
-    if (drupal_match_path($_GET['q'], $bg_urls)) {
+    if (new_relic_rpm_page_match($_GET['q'], $bg_urls)) {
       return new_relic_rpm_set_job_state('bg');
     }
   }
@@ -267,4 +267,24 @@ function new_relic_rpm_curl($url, $post = array()) {
   }
 
   return $return_data;
+}
+
+/**
+ * Check if a path matches any pattern in a set of patterns.
+ *
+ * This is a direct copy of drupal_match_path without the static cache since we
+ * don't need it. This is needed because we need our hook_boot to be able to
+ * operate before path.inc has been bootstrapped.
+ *
+ * @param $path
+ *   The path to match.
+ * @param $patterns
+ *   String containing a set of patterns separated by \n, \r or \r\n.
+ *
+ * @return
+ *   1 if there is a match, 0 if there is not a match.
+ */
+function new_relic_rpm_page_match($path, $patterns) {
+  $regexp = '/^('. preg_replace(array('/(\r\n?|\n)/', '/\\\\\*/', '/(^|\|)\\\\<front\\\\>($|\|)/'), array('|', '.*', '\1'. preg_quote(variable_get('site_frontpage', 'node'), '/') .'\2'), preg_quote($patterns, '/')) .')$/';
+  return preg_match($regexp, $path);
 }
