@@ -8,7 +8,9 @@
  * Implement hook_install().
  */
 function new_relic_rpm_install() {
-
+  // Set New Relic RPM module's weight to very low so we can trigger job state
+  // changes early. This can be important in cases like hook_cron().
+  db_query("UPDATE {system} SET weight = -20 WHERE name = 'new_relic_rpm'");
 }
 
 /**
@@ -37,4 +39,13 @@ function new_relic_rpm_uninstall() {
   variable_del('new_relic_rpm_api_key');
   variable_del('new_relic_rpm_module_deployment');
   variable_del('new_relic_rpm_app_name');
+}
+
+/**
+ * Set New Relic RPM module's weight to very low.
+ *
+ * @see new_relic_rpm_install()
+ */
+function new_relic_rpm_update_6001() {
+  db_query("UPDATE {system} SET weight = -20 WHERE name = 'new_relic_rpm'");
 }
