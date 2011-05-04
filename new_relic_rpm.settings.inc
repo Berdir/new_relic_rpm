@@ -10,6 +10,18 @@
 function new_relic_rpm_settings(&$form_state) {
   $form = array();
 
+  $form['new_relic_rpm_track_drush'] = array(
+    '#type' => 'select',
+    '#title' => t('Drush transactions'),
+    '#description' => t('How do you wish RPM to track drush commands?'),
+    '#options' => array(
+      'ignore' => t('Ignore completely'),
+      'bg' => t('Track as background tasks'),
+      'norm' => t('Track normally'),
+    ),
+    '#default_value' => variable_get('new_relic_rpm_track_drush', 'norm'),
+  );
+
   $form['new_relic_rpm_track_cron'] = array(
     '#type' => 'select',
     '#title' => t('Cron transactions'),

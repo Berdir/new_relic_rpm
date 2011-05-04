@@ -61,12 +61,7 @@ function new_relic_rpm_perm() {
  */
 function new_relic_rpm_cron() {
   $cron_tracking = variable_get('new_relic_rpm_track_cron', 'norm');
-  if ($cron_tracking == 'bg') {
-    newrelic_background_job(TRUE);
-  }
-  elseif ($cron_tracking == 'ignore') {
-    newrelic_ignore_transaction(TRUE);
-  }
+  new_relic_rpm_set_job_state($cron_tracking);
 }
 
 /**
@@ -82,22 +77,19 @@ function new_relic_rpm_boot() {
 
   if (!empty($exclu_urls)) {
     if (!drupal_match_path($_GET['q'], $exclu_urls)) {
-      newrelic_ignore_transaction(TRUE);
-      return;
+      return new_relic_rpm_set_job_state('ignore');
     }
   }
 
   if (!empty($ignore_urls)) {
     if (drupal_match_path($_GET['q'], $ignore_urls)) {
-      newrelic_ignore_transaction(TRUE);
-      return;
+      return new_relic_rpm_set_job_state('ignore');
     }
   }
 
   if (!empty($bg_urls)) {
     if (drupal_match_path($_GET['q'], $bg_urls)) {
-      newrelic_background_job(TRUE);
-      return;
+      return new_relic_rpm_set_job_state('bg');
     }
   }
 }
@@ -120,6 +112,35 @@ function new_relic_rpm_form_system_modules_alter(&$form, &$form_state) {
       ksort($form['#submit']);
       reset($form['#submit']);
     }
+  }
+}
+
+function new_relic_rpm_set_job_state($setting) {
+  static $newrelic_module;
+
+  if (!isset($newrelic_module)) {
+    $newrelic_module = function_exists('newrelic_background_job');
+  }
+
+  // If newrelic module isn't loaded into php, error and return.
+  if (!$newrelic_module) {
+    // Only throw error if we've booted far enough to watchdog.
+    // i.e. drush updatedb
+    if (function_exists('module_implements')) {
+      watchdog('New Relic RPM', 'New Relic RPM PHP module not enabled.', array(), WATCHDOG_ERROR);
+    }
+    return;
+  }
+
+  switch ($setting) {
+    case 'bg':
+      newrelic_background_job(TRUE);
+      break;
+
+    case 'ignore':
+      newrelic_ignore_transaction(TRUE);
+      break;
+
   }
 }
 
