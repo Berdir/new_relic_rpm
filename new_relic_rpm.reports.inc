@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Reporting page callbacks.
+ */
 
 /**
  * Main page for RPM reporting. List all the applications on this API Key.

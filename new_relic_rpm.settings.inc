@@ -1,7 +1,11 @@
 <?php
+/**
+ * @file
+ * New Relic RPM Drupal setting form and callbacks.
+ */
 
 /**
- * Module settings page.
+ * New Relic RPM settings form.
  */
 function new_relic_rpm_settings(&$form_state) {
   $form = array();
@@ -68,7 +72,7 @@ function new_relic_rpm_settings(&$form_state) {
 }
 
 /**
- * Manually create a deployment.
+ * Form callback for manually creating a deployment.
  */
 function new_relic_rpm_deploy(&$form_state) {
   $form = array();
@@ -107,7 +111,7 @@ function new_relic_rpm_deploy(&$form_state) {
 }
 
 /**
- * FormAPI sumbit callback for the manual deployment creation page.
+ * FormAPI sumbit callback for the manual deployment creation.
  */
 function new_relic_rpm_deploy_submit($form, &$form_state) {
 

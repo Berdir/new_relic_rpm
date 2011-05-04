@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Install and uninstall functions as well as schema definition for the Mollom module.
+ */
 
 /**
  * Implement hook_install().
