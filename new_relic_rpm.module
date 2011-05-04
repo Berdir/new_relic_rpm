@@ -66,7 +66,9 @@ function new_relic_rpm_help($path, $arg) {
  */
 function new_relic_rpm_perm() {
   return array(
-    'administer new relic rpm', 'view new relic rpm reports', 'create new relic rpm deployments',
+    'administer new relic rpm',
+    'view new relic rpm reports',
+    'create new relic rpm deployments',
   );
 }
 
