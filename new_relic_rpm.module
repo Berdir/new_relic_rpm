@@ -162,7 +162,7 @@ function new_relic_rpm_module_deploy($new_modules, $disable_modules) {
  * This is used to set cron tasks to be not tracked by RPM if so desired.
  */
 function new_relic_rpm_cron() {
-  $cron_tracking = variable_get(new_relic_rpm_track_cron, 'norm');
+  $cron_tracking = variable_get('new_relic_rpm_track_cron', 'norm');
   if ($cron_tracking == 'bg') {
     newrelic_background_job(TRUE);
   }
