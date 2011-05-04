@@ -40,28 +40,6 @@ function new_relic_rpm_menu() {
 }
 
 /**
- * Implements hook_help().
- */
-function new_relic_rpm_help($path, $arg) {
-  $output = '';
-  /*
-  switch ($path) {
-    case 'admin/settings/new-relic-rpm':
-      $output .= '<p>TODO</p>';
-      break;
-    case 'admin/reports/new-relic-rpm':
-      $output .= '<p>TODO</p>';
-      break;
-          case 'admin/reports/new-relic-rpm/details/%':
-      $output .= '<p>TODO</p>';
-      break;
-  }
-  */
-
-  return $output;
-}
-
-/**
  * Implements hook_perm().
  */
 function new_relic_rpm_perm() {
