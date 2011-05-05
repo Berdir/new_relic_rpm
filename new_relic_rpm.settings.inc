@@ -54,6 +54,7 @@ function new_relic_rpm_settings(&$form_state) {
 
   $form['new_relic_rpm_ignore_urls'] = array(
     '#type' => 'textarea',
+    '#wysiwyg' => FALSE,
     '#title' => t('Ignore URLs'),
     '#description' => t('Enter URLs you wish New Relic RPM to ignore. Enter one URL per line.'),
     '#default_value' => variable_get('new_relic_rpm_ignore_urls', ''),
@@ -61,6 +62,7 @@ function new_relic_rpm_settings(&$form_state) {
 
   $form['new_relic_rpm_bg_urls'] = array(
     '#type' => 'textarea',
+    '#wysiwyg' => FALSE,
     '#title' => t('Background URLs'),
     '#description' => t('Enter URLs you wish to have tracked as background tasks. Enter one URL per line.'),
     '#default_value' => variable_get('new_relic_rpm_bg_urls', ''),
@@ -68,6 +70,7 @@ function new_relic_rpm_settings(&$form_state) {
 
   $form['new_relic_rpm_exclusive_urls'] = array(
     '#type' => 'textarea',
+    '#wysiwyg' => FALSE,
     '#title' => t('Exclusive URLs'),
     '#description' => t('Enter URLs you wish exclusively track. This is usefull for debugging specific issues. **NOTE** Entering URLs here effectively marks all other URLs as ignored. Leave blank to disable.'),
     '#default_value' => variable_get('new_relic_rpm_exclusive_urls', ''),
