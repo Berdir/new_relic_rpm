@@ -75,20 +75,23 @@ function new_relic_rpm_boot() {
   $bg_urls = variable_get('new_relic_rpm_bg_urls', '');
   $exclu_urls = variable_get('new_relic_rpm_exclusive_urls', '');
 
+  // Handle cases where this getting called from command line and q isn't set.
+  $path = isset($_GET['q']) ? $_GET['q'] : '';
+
   if (!empty($exclu_urls)) {
-    if (!new_relic_rpm_page_match($_GET['q'], $exclu_urls)) {
+    if (!new_relic_rpm_page_match($path, $exclu_urls)) {
       return new_relic_rpm_set_job_state('ignore');
     }
   }
 
   if (!empty($ignore_urls)) {
-    if (new_relic_rpm_page_match($_GET['q'], $ignore_urls)) {
+    if (new_relic_rpm_page_match($path, $ignore_urls)) {
       return new_relic_rpm_set_job_state('ignore');
     }
   }
 
   if (!empty($bg_urls)) {
-    if (new_relic_rpm_page_match($_GET['q'], $bg_urls)) {
+    if (new_relic_rpm_page_match($path, $bg_urls)) {
       return new_relic_rpm_set_job_state('bg');
     }
   }
