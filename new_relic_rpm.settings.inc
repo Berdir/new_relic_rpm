@@ -45,13 +45,6 @@ function new_relic_rpm_settings(&$form_state) {
     '#default_value' => variable_get('new_relic_rpm_module_deployment', 0),
   );
 
-  $form['new_relic_rpm_app_name'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Application Name'),
-    '#description' => t("If you are tracking/entering deployments via the Drupal UI, you will need to enter the *exact* RPM Application Name you have entered for the application that encompasses this Drupal installation on New Relic's website."),
-    '#default_value' => variable_get('new_relic_rpm_app_name', ''),
-  );
-
   $form['new_relic_rpm_ignore_urls'] = array(
     '#type' => 'textarea',
     '#wysiwyg' => FALSE,

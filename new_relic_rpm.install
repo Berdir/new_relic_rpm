@@ -49,3 +49,15 @@ function new_relic_rpm_uninstall() {
 function new_relic_rpm_update_6001() {
   db_query("UPDATE {system} SET weight = -20 WHERE name = 'new_relic_rpm'");
 }
+
+/**
+ * Remove variable based app name and use the hard coded ini value.
+ *
+ * Since the ini value is required for newrelic to function correctly anyways,
+ * it only makes sense that we go ahead and use it for our deployments as well.
+ * This is doubly true since we document requiring this to be the same as the
+ * value used by the rest of the monitoring.
+ */
+function new_relic_rpm_update_6002() {
+  variable_del('new_relic_rpm_app_name');
+}

@@ -105,16 +105,15 @@ function new_relic_rpm_boot() {
 function new_relic_rpm_form_system_modules_alter(&$form, &$form_state) {
 
   if (variable_get('new_relic_rpm_module_deployment', FALSE) &&
-      variable_get('new_relic_rpm_app_name', FALSE)) {
+      // If the API Key and/or App name is/are not set, there is no sense in
+      // attempting to create deployments.
+      ini_get('newrelic.appname') &&
+      variable_get('new_relic_rpm_api_key', '')) {
 
-    $api_key = variable_get('new_relic_rpm_api_key', '');
-    // If the API Key and/or App name is/are not set, there is no sense in attempting to create deployments.
-    if (!empty($api_key)) {
-      // We need our module check to run first--before the actuall install is done by Drupal.
-      $form['#submit'][-1000] = 'new_relic_rpm_modules_enabled';
-      ksort($form['#submit']);
-      reset($form['#submit']);
-    }
+    // We need our module check to run first--before the actuall install is done by Drupal.
+    $form['#submit'][-1000] = 'new_relic_rpm_modules_enabled';
+    ksort($form['#submit']);
+    reset($form['#submit']);
   }
 }
 
@@ -243,7 +242,7 @@ function new_relic_rpm_module_deploy($new_modules, $disable_modules) {
  * Send deployments to New Relic's web API.
  */
 function _new_relic_rpm_deploy($user, $description, $changelog, $revision = NULL) {
-  $post_vars['deployment[application_id]'] = variable_get('new_relic_rpm_app_name', '');
+  $post_vars['deployment[application_id]'] = ini_get('newrelic.appname');
   $post_vars['deployment[user]'] = $user;
   $post_vars['deployment[description]'] = $description;
   $post_vars['deployment[changelog]'] = $changelog;
