@@ -130,20 +130,15 @@ function new_relic_rpm_deploy(&$form_state) {
  */
 function new_relic_rpm_deploy_submit($form, &$form_state) {
 
-  $api_key = variable_get('new_relic_rpm_api_key', '');
+  $deployments = _new_relic_rpm_deploy($form_state['values']['deploy_user'],
+    $form_state['values']['deploy_description'],
+    $form_state['values']['deploy_changelog'],
+    $form_state['values']['deploy_revision']);
 
-  $post_vars['deployment[application_id]'] = variable_get('new_relic_rpm_app_name', '');
-  $post_vars['deployment[user]'] = $form_state['values']['deploy_user'];
-  $post_vars['deployment[description]'] = $form_state['values']['deploy_description'];
-  $post_vars['deployment[changelog]'] = $form_state['values']['deploy_changelog'];
-  $post_vars['deployment[revision]'] = $form_state['values']['deploy_revision'];
-  $deployments = new_relic_rpm_curl('https://rpm.newrelic.com/deployments.xml', $api_key, $post_vars);
   if (strlen($deployments) > 20) {
     drupal_set_message(t('New Relic RPM deployment created successfully'), 'status');
   }
   else {
     drupal_set_message(t('New Relic RPM deployment failed to be created. Please ensure you have your account configured on the <a href="!settings">New Relic RPM Drupal admin page</a>.', array('!settings' => url('admin/settings/new-relic-rpm'))), 'error');
   }
-
-  watchdog('New Relic RPM', t('Module install/uninstall action logged as deployment. Log data: %details', array('%details' => $deployments)));
 }

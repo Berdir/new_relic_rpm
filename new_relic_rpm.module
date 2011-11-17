@@ -234,10 +234,22 @@ function new_relic_rpm_module_deploy($new_modules, $disable_modules) {
     $m_remv = '';
   }
 
+  _new_relic_rpm_deploy('Drupal Module Install/Uninstall',
+    'Drupal modules were installed: ' . ($modules_installed ? 'YES' : 'NO') . ' and uninstalled: ' . ($modules_removed ? 'YES' : 'NO'),
+    $m_inst . $m_remv);
+}
+
+/**
+ * Send deployments to New Relic's web API.
+ */
+function _new_relic_rpm_deploy($user, $description, $changelog, $revision = NULL) {
   $post_vars['deployment[application_id]'] = variable_get('new_relic_rpm_app_name', '');
-  $post_vars['deployment[user]'] = 'Drupal Module Install/Uninstall';
-  $post_vars['deployment[description]'] = 'Drupal modules were installed: ' . ($modules_installed ? 'YES' : 'NO') . ' and uninstalled: ' . ($modules_removed ? 'YES' : 'NO');
-  $post_vars['deployment[changelog]'] = $m_inst . $m_remv;
+  $post_vars['deployment[user]'] = $user;
+  $post_vars['deployment[description]'] = $description;
+  $post_vars['deployment[changelog]'] = $changelog;
+  if (isset($revision)) {
+    $post_vars['deployment[revision]'] = $revision;
+  }
   $deployments = new_relic_rpm_curl('https://rpm.newrelic.com/deployments.xml', $post_vars);
 
   watchdog('New Relic RPM', 'Module install/uninstall action logged as deployment. Log data: %details', array('%details' => $deployments));
