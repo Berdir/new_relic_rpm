@@ -89,7 +89,7 @@ function new_relic_rpm_render_health($app_health) {
   $cust_id = (string)$app_obj->account->id;
 
   $apps = $app_obj->account->applications;
-  foreach ($apps as $app){
+  foreach ($apps as $app) {
     foreach ($app as $data) {
 
       foreach ($data->{"threshold-values"} as $val) {
@@ -145,27 +145,28 @@ function new_relic_rpm_render_health($app_health) {
  */
 function new_relic_rpm_render_actions($cust_id, $app_id) {
 
-  $urls['overview'] = "https://rpm.newrelic.com/accounts/{$cust_id}/applications/{$app_id}";
-  $urls['web_transactions'] = "https://rpm.newrelic.com/accounts/{$cust_id}/applications/{$app_id}/transactions";
-  $urls['databases'] = "https://rpm.newrelic.com/accounts/{$cust_id}/applications/{$app_id}/databases";
-  $urls['bg_tasks'] = "https://rpm.newrelic.com/accounts/{$cust_id}/applications/{$app_id}/background_tasks?task=all";
-  $urls['traced_errors'] = "https://rpm.newrelic.com/accounts/{$cust_id}/applications/{$app_id}/traced_errors";
-  $urls['app_settings'] = "https://rpm.newrelic.com/accounts/{$cust_id}/applications/{$app_id}/edit";
-  $urls['alerts'] = "https://rpm.newrelic.com/accounts/{$cust_id}/applications/{$app_id}/edit_alerts";
-  $urls['deployments'] = "https://rpm.newrelic.com/accounts/{$cust_id}/applications/{$app_id}/deployments";
-
   $output = '<h2>Quick Links for this Application</h2>';
   $output .= '<p>Links open New Relic\'s website in a new window.</p>';
-  $output .= '<ul>';
-  $output .= '<li>'.l('Overview', $urls['overview'], array('attributes'=>array('target'=>'_blank'))).'</li>';
-  $output .= '<li>'.l('Web Transactions', $urls['web_transactions'], array('attributes'=>array('target'=>'_blank'))).'</li>';
-  $output .= '<li>'.l('Database Activity', $urls['databases'], array('attributes'=>array('target'=>'_blank'))).'</li>';
-  $output .= '<li>'.l('Background Tasks', $urls['bg_tasks'], array('attributes'=>array('target'=>'_blank'))).'</li>';
-  $output .= '<li>'.l('Traced Errors', $urls['traced_errors'], array('attributes'=>array('target'=>'_blank'))).'</li>';
-  $output .= '<li>'.l('App Settings', $urls['app_settings'], array('attributes'=>array('target'=>'_blank'))).'</li>';
-  $output .= '<li>'.l('App Alerts & Thresholds', $urls['alerts'], array('attributes'=>array('target'=>'_blank'))).'</li>';
-  $output .= '<li>'.l('Deployments', $urls['deployments'], array('attributes'=>array('target'=>'_blank'))).'</li>';
-  $output .= '</ul>';
+
+  $rpm_url = "https://rpm.newrelic.com/accounts/{$cust_id}/applications/{$app_id}";
+  $actions = array(
+    'transactions' => t('Web Transactions'),
+    'databases' => t('Database Activity'),
+    'background_tasks' => t('Background Tasks'),
+    'traced_errors' => t('Traced Errors'),
+    'edit' => t('App Settings'),
+    'edit_alerts' => t('App Alerts & Thresholds'),
+    'deployments' => t('Deployments'),
+  );
+  $links = array(array('title' => t("Overview"), 'href' => $rpm_url, 'attributes' => array('class' => '_blank')));
+  foreach ($actions as $action => $title) {
+    $links[$action]= array(
+      'title' => $title,
+      'href' => "{$rpm_url}/{$action}",
+      'attributes' => array('target' => '_blank'),
+    );
+  }
+  $output .= theme_links($links, array());
 
   return $output;
 }
