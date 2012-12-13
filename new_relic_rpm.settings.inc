@@ -132,6 +132,6 @@ function new_relic_rpm_deploy_submit($form, &$form_state) {
     drupal_set_message(t('New Relic RPM deployment created successfully'), 'status');
   }
   else {
-    drupal_set_message(t('New Relic RPM deployment failed to be created. Please ensure you have your account configured on the <a href="!settings">New Relic RPM Drupal admin page</a>.', array('!settings' => url('admin/settings/new-relic-rpm'))), 'error');
+    drupal_set_message(t('New Relic RPM deployment failed to be created. Please ensure you have your account configured on the <a href="@settings">New Relic RPM Drupal admin page</a>.', array('@settings' => url('admin/settings/new-relic-rpm'))), 'error');
   }
 }

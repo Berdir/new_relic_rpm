@@ -21,7 +21,7 @@ function new_relic_rpm_install() {
  */
 function new_relic_rpm_enable() {
   if (!function_exists('newrelic_background_job')) {
-    drupal_set_message('The New Relic RPM PHP extension is missing. This extension must be installed and functional on your server before this module can be enabled. Visit '.l('the New Relic RPM installation guide','http://support.newrelic.com/kb/docs/php-agent').' for assistance','error');
+    drupal_set_message(t('The New Relic RPM PHP extension is missing. This extension must be installed and functional on your server before this module can be enabled. Visit <a href="@installation-guide">New Relic for PHP installation instructions</a> for assistance.', array('@installation-guide' => url('https://newrelic.com/docs/php/new-relic-for-php#installation'))), 'error');
     module_disable(array('new_relic_rpm'));
   }
 }
