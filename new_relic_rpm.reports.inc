@@ -123,21 +123,18 @@ function new_relic_rpm_render_health($app_health) {
     'Details',
   );
 
+  $metrics = array('Apdex', 'Response Time', 'Errors', 'Error Rate', 'Throughput', 'Application Busy', 'DB', 'CPU', 'Memory');
   foreach ($app_data as $k => $v) {
-    $table['rows'][] = array(
-      $k,
-      $v['AppID'],
-      $v['Apdex']['mval'] > $v['Apdex']['thresh'] ? '<span class="error">'.$v['Apdex']['val'].'</span>' : $v['Apdex']['val'],
-      $v['Response Time']['mval'] > $v['Response Time']['thresh'] ? '<span class="error">'.$v['Response Time']['val'].'</span>' : $v['Response Time']['val'],
-      $v['Errors']['mval'] > $v['Errors']['thresh'] ? '<span class="error">'.$v['Errors']['val'].'</span>' : $v['Errors']['val'],
-      $v['Error Rate']['mval'] > $v['Error Rate']['thresh'] ? '<span class="error">'.$v['Error Rate']['val'].'</span>' : $v['Error Rate']['val'],
-      $v['Throughput']['mval'] > $v['Throughput']['thresh'] ? '<span class="error">'.$v['Throughput']['val'].'</span>' : $v['Throughput']['val'],
-      $v['Application Busy']['mval'] > $v['Application Busy']['thresh'] ? '<span class="error">'.$v['Application Busy']['val'].'</span>' : $v['Application Busy']['val'],
-      $v['DB']['mval'] > $v['DB']['thresh'] ? '<span class="error">'.$v['DB']['val'].'</span>' : $v['DB']['val'],
-      $v['CPU']['mval'] > $v['CPU']['thresh'] ? '<span class="error">'.$v['CPU']['val'].'</span>' : $v['CPU']['val'],
-      $v['Memory']['mval'] > $v['Memory']['thresh'] ? '<span class="error">'.$v['Memory']['val'].'</span>' : $v['Memory']['val'],
-      l('Details', 'admin/reports/new-relic-rpm/details/'.$cust_id.'/'.$v['AppID'], array('query'=>array('app_name'=>$k))),
-    );
+    $row = array($k, $v['AppID']);
+    foreach ($metrics as $metric) {
+      $cell = array('data' => $v[$metric]['val']);
+      if ($v[$metric]['mval'] > $v[$metric]['thresh']) {
+        $cell['class'] = 'error';
+      }
+      $row[] = $cell;
+    }
+    $row[] = l('Details', 'admin/reports/new-relic-rpm/details/' . $cust_id . '/'. $v['AppID'], array('query' => array('app_name' => $k)));
+    $table['rows'][] = $row;
   }
 
   return theme_table($table['header'], $table['rows']);
