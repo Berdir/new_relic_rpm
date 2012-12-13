@@ -5,12 +5,19 @@
  */
 
 /**
- * Implement hook_install().
+ * Implements hook_install().
  */
 function new_relic_rpm_install() {
   // Set New Relic RPM module's weight to very low so we can trigger job state
   // changes early. This can be important in cases like hook_cron().
-  db_query("UPDATE {system} SET weight = -20 WHERE name = 'new_relic_rpm'");
+  // TODO Please review the conversion of this statement to the D7 database API syntax.
+  /* db_query("UPDATE {system} SET weight = -20 WHERE name = 'new_relic_rpm'") */
+  db_update('system')
+  ->fields(array(
+    'weight' => -20,
+  ))
+  ->condition('name', 'new_relic_rpm')
+  ->execute();
 }
 
 /**
@@ -27,7 +34,7 @@ function new_relic_rpm_enable() {
 }
 
 /**
- * Implement hook_uninstall().
+ * Implements hook_uninstall().
  */
 function new_relic_rpm_uninstall() {
 
@@ -42,22 +49,8 @@ function new_relic_rpm_uninstall() {
 }
 
 /**
- * Set New Relic RPM module's weight to very low.
- *
- * @see new_relic_rpm_install()
+ * Implements hook_update_last_removed().
  */
-function new_relic_rpm_update_6001() {
-  db_query("UPDATE {system} SET weight = -20 WHERE name = 'new_relic_rpm'");
-}
-
-/**
- * Remove variable based app name and use the hard coded ini value.
- *
- * Since the ini value is required for newrelic to function correctly anyways,
- * it only makes sense that we go ahead and use it for our deployments as well.
- * This is doubly true since we document requiring this to be the same as the
- * value used by the rest of the monitoring.
- */
-function new_relic_rpm_update_6002() {
-  variable_del('new_relic_rpm_app_name');
+function new_relic_rpm_update_last_removed() {
+  return 6002;
 }

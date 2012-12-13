@@ -5,7 +5,7 @@
  */
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function new_relic_rpm_menu() {
   $items['admin/content/new-relic-rpm'] = array(
@@ -16,7 +16,7 @@ function new_relic_rpm_menu() {
     'access arguments' => array('create new relic rpm deployments'),
     'file' => 'new_relic_rpm.settings.inc',
   );
-  $items['admin/settings/new-relic-rpm'] = array(
+  $items['admin/config/development/new-relic-rpm'] = array(
     'title' => 'New Relic RPM Settings',
     'description' => 'Alter settings and mange your New Relic RPM Integration.',
     'page callback' => 'drupal_get_form',
@@ -44,18 +44,24 @@ function new_relic_rpm_menu() {
 }
 
 /**
- * Implementation of hook_perm().
+ * Implements hook_permission().
  */
-function new_relic_rpm_perm() {
+function new_relic_rpm_permission() {
   return array(
-    'administer new relic rpm',
-    'view new relic rpm reports',
-    'create new relic rpm deployments',
+    'administer new relic rpm' => array(
+      'title' => t('Administer new relic rpm'),
+    ),
+    'view new relic rpm reports' => array(
+      'title' => t('View new relic rpm reports'),
+    ),
+    'create new relic rpm deployments' => array(
+      'title' => t('Create new relic rpm deployments'),
+    ),
   );
 }
 
 /**
- * Implementation of hook_cron().
+ * Implements hook_cron().
  *
  * This is used to set cron tasks to be not tracked by RPM if so desired.
  */
@@ -65,7 +71,7 @@ function new_relic_rpm_cron() {
 }
 
 /**
- * Implementation of hook_boot().
+ * Implements hook_boot().
  *
  * This is used to set various RPM settings by URL.
  */
@@ -98,25 +104,9 @@ function new_relic_rpm_boot() {
 }
 
 /**
- * Implementation of hook_form_alter().
- *
- * Add a submit action to the system_module enable/disable form
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
  */
-function new_relic_rpm_form_system_modules_alter(&$form, &$form_state) {
-
-  if (variable_get('new_relic_rpm_module_deployment', FALSE) &&
-      // If the API Key and/or App name is/are not set, there is no sense in
-      // attempting to create deployments.
-      ini_get('newrelic.appname') &&
-      variable_get('new_relic_rpm_api_key', '')) {
-
-    // We need our module check to run first--before the actuall install is done by Drupal.
-    $form['#submit'][-1000] = 'new_relic_rpm_modules_enabled';
-    ksort($form['#submit']);
-    reset($form['#submit']);
-  }
-}
-
 function new_relic_rpm_set_job_state($setting) {
   static $newrelic_module;
 
@@ -147,68 +137,22 @@ function new_relic_rpm_set_job_state($setting) {
 }
 
 /**
- * Submit callback for system module page.
- *
- * Because we need to determine which modules Drupal is going to install, we
- * are going to perform the same actions as the actual module install process,
- * minus the actual installation of the modules.
+ * Implements hook_modules_enabled().
  */
-function new_relic_rpm_modules_enabled($form, &$form_state) {
-  include_once './includes/install.inc';
-  $new_modules = array();
-  $enable_modules = array();
-  $disable_modules = array();
-
-  // If we are coming from the confirm form...
-  if (!isset($form_state['storage'])) {
-    // Merge in disabled active modules since they should be enabled.
-    // They don't appear because disabled checkboxes are not submitted
-    // by browsers.
-    $form_state['values']['status'] = array_merge($form_state['values']['status'], $form_state['values']['disabled_modules']);
-
-    // Check values for dependency that we can't install.
-    $dependencies = system_module_build_dependencies($form_state['values']['validation_modules'], $form_state['values']);
-
-  }
-  else {
-    $dependencies = NULL;
-  }
-
-  // Return if there are dependencies and they were not yet confirmed.
-  if ($dependencies && !isset($form_state['values']['confirm'])) {
-    return;
-  }
-
-  // Dependencies are covered. Drupal is going to install modules. Find out which.
-  foreach ($form_state['values']['status'] as $key => $choice) {
-    if ($choice) {
-      if (drupal_get_installed_schema_version($key) == SCHEMA_UNINSTALLED) {
-        $new_modules[] = $key;
-      }
-      else {
-        $enable_modules[] = $key;
-      }
-    }
-    else {
-      $disable_modules[] = $key;
-    }
-  }
-
-  // Validate new modules.
-  foreach ($new_modules as $key => $module) {
-    if (!drupal_check_module($module)) {
-      unset($new_modules[$key]);
-    }
-  }
-
-  $old_module_list = module_list();
-
-  $new_modules = array_diff(array_merge($enable_modules, $new_modules), $old_module_list);
-  $disable_modules = array_intersect($disable_modules, $old_module_list);
-
+function new_relic_rpm_modules_enabled($modules) {
   // Make the Deploy call to New Relic.
-  if (!empty($new_modules) || !empty($disable_modules)) {
-    new_relic_rpm_module_deploy($new_modules, $disable_modules);
+  if (!empty($modules)) {
+    new_relic_rpm_module_deploy($modules, NULL);
+  }
+}
+
+/**
+ * Implements hook_modules_disabled().
+ */
+function new_relic_rpm_modules_disabled($modules) {
+  // Make the Deploy call to New Relic.
+  if (!empty($modules)) {
+    new_relic_rpm_module_deploy(NULL, $modules);
   }
 }
 
@@ -216,26 +160,32 @@ function new_relic_rpm_modules_enabled($form, &$form_state) {
  * Log module enable/disable actions as a deploy call to New Relic RPM.
  */
 function new_relic_rpm_module_deploy($new_modules, $disable_modules) {
-  $modules_installed = !empty($new_modules);
-  $modules_removed = !empty($disable_modules);
+  // If the API Key and/or App name is/are not set, there is no sense in
+  // attempting to create deployments.
+  if (variable_get('new_relic_rpm_module_deployment', FALSE) &&
+      ini_get('newrelic.appname') &&
+      variable_get('new_relic_rpm_api_key', '')) {
+    $modules_installed = !empty($new_modules);
+    $modules_removed = !empty($disable_modules);
 
-  if ($modules_installed) {
-    $m_inst = 'Modules Installed: ' . implode(', ', $new_modules ) . "\n";
-  }
-  else {
-    $m_inst = '';
-  }
+    if ($modules_installed) {
+      $m_inst = 'Modules Installed: ' . implode(', ', $new_modules ) . "\n";
+    }
+    else {
+      $m_inst = '';
+    }
 
-  if ($modules_removed) {
-    $m_remv = 'Modules Removed: ' . implode(', ', $disable_modules) . "\n";
-  }
-  else {
-    $m_remv = '';
-  }
+    if ($modules_removed) {
+      $m_remv = 'Modules Removed: ' . implode(', ', $disable_modules) . "\n";
+    }
+    else {
+      $m_remv = '';
+    }
 
-  _new_relic_rpm_deploy('Drupal Module Install/Uninstall',
-    'Drupal modules were installed: ' . ($modules_installed ? 'YES' : 'NO') . ' and uninstalled: ' . ($modules_removed ? 'YES' : 'NO'),
-    $m_inst . $m_remv);
+    _new_relic_rpm_deploy('Drupal Module Install/Uninstall',
+      'Drupal modules were installed: ' . ($modules_installed ? 'YES' : 'NO') . ' and uninstalled: ' . ($modules_removed ? 'YES' : 'NO'),
+      $m_inst . $m_remv);
+  }
 }
 
 /**
@@ -269,6 +219,7 @@ function new_relic_rpm_curl($url, $post = array()) {
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
   if (!empty($post)) {
     curl_setopt($ch, CURLOPT_POST, TRUE);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
@@ -299,6 +250,6 @@ function new_relic_rpm_curl($url, $post = array()) {
  *   1 if there is a match, 0 if there is not a match.
  */
 function new_relic_rpm_page_match($path, $patterns) {
-  $regexp = '/^('. preg_replace(array('/(\r\n?|\n)/', '/\\\\\*/', '/(^|\|)\\\\<front\\\\>($|\|)/'), array('|', '.*', '\1'. preg_quote(variable_get('site_frontpage', 'node'), '/') .'\2'), preg_quote($patterns, '/')) .')$/';
+  $regexp = '/^(' . preg_replace(array('/(\r\n?|\n)/', '/\\\\\*/', '/(^|\|)\\\\<front\\\\>($|\|)/'), array('|', '.*', '\1' . preg_quote(variable_get('site_frontpage', 'node'), '/') . '\2'), preg_quote($patterns, '/')) . ')$/';
   return preg_match($regexp, $path);
 }

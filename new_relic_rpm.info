@@ -2,5 +2,5 @@
 name = New Relic RPM
 description = Integration with the New Relic RPM reporting and optimization system.
 version = "6.x-1.0"
-core = 6.x
+core = 7.x
 project = "new_relic_rpm"

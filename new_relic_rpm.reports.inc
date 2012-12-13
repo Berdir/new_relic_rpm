@@ -12,7 +12,7 @@ function new_relic_rpm_reporting() {
   // If no API key is set, break here and error out.
   $api_key = variable_get('new_relic_rpm_api_key', '');
   if (empty($api_key)) {
-    drupal_set_message(t('You need to enter your New Relic API key from your New Relic account settings page before you are able to view reports within Drupal. Visit the <a href="@settings">New Relic RPM Drupal admin page</a> to enter your API key.', array('@settings' => url('admin/settings/new-relic-rpm'))), 'error');
+    drupal_set_message(t('You need to enter your New Relic API key from your New Relic account settings page before you are able to view reports within Drupal. Visit the <a href="@settings">New Relic RPM Drupal admin page</a> to enter your API key.', array('@settings' => url('admin/config/new-relic-rpm'))), 'error');
     return '<h2>' . t('No API key found.') . '</h2>';
   }
 
@@ -26,7 +26,7 @@ function new_relic_rpm_reporting() {
   }
   // Error out of the return is False, store data if it is good.
   if (!$app_health) {
-    drupal_set_message(t('The New Relic REST API has denied your key. Either the key you entered on the <a href="@settings">New Relic RPM Drupal admin page</a> is incorrect, or you have not enabled API access for this application within the New Relic RPM webiste.', array('@settings' => url('admin/settings/new-relic-rpm'))), 'error');
+    drupal_set_message(t('The New Relic REST API has denied your key. Either the key you entered on the <a href="@settings">New Relic RPM Drupal admin page</a> is incorrect, or you have not enabled API access for this application within the New Relic RPM webiste.', array('@settings' => url('admin/config/new-relic-rpm'))), 'error');
     return '<h2>' . t('API access denied.') . '</h2>';
   }
   else {
@@ -47,7 +47,7 @@ function new_relic_rpm_reporting_details($cust_id, $app_id) {
   // If no API key is set, break here and error out.
   $api_key = variable_get('new_relic_rpm_api_key', '');
   if (empty($api_key)) {
-    drupal_set_message(t('You need to enter your New Relic API key from your New Relic account settings page before you are able to view reports within Drupal. Visit the <a href="@settings">New Relic RPM Drupal admin page<a/> to enter your API key.', array('@settings' => url('admin/settings/new-relic-rpm'))), 'error');
+    drupal_set_message(t('You need to enter your New Relic API key from your New Relic account settings page before you are able to view reports within Drupal. Visit the <a href="@settings">New Relic RPM Drupal admin page<a/> to enter your API key.', array('@settings' => url('admin/config/new-relic-rpm'))), 'error');
     return '<h2>' . t('No API key found.') . '</h2>';
   }
 
@@ -61,7 +61,7 @@ function new_relic_rpm_reporting_details($cust_id, $app_id) {
 
   // Error out if value is false, save cached copy of XML if it is good.
   if (!$app_dashboard) {
-    drupal_set_message(t('The New Relic REST API has denied your key. Either the key you entered on the <a href="@settings">New Relic RPM Drupal admin page</a> is incorrect, or you have not enabled API access for this application within the New Relic RPM webiste.', array('@settings' => url('admin/settings/new-relic-rpm'))), 'error');
+    drupal_set_message(t('The New Relic REST API has denied your key. Either the key you entered on the <a href="@settings">New Relic RPM Drupal admin page</a> is incorrect, or you have not enabled API access for this application within the New Relic RPM webiste.', array('@settings' => url('admin/config/new-relic-rpm'))), 'error');
     return '<h2>' . t('API access denied.') . '</h2>';
   }
   else {
@@ -86,23 +86,23 @@ function new_relic_rpm_reporting_details($cust_id, $app_id) {
 function new_relic_rpm_render_health($app_health) {
 
   $app_obj = simplexml_load_string($app_health);
-  $cust_id = (string)$app_obj->account->id;
+  $cust_id = (string) $app_obj->account->id;
 
   $apps = $app_obj->account->applications;
   foreach ($apps as $app) {
     foreach ($app as $data) {
 
       foreach ($data->{"threshold-values"} as $val) {
-          foreach ($val->threshold_value as $v) {
+        foreach ($val->threshold_value as $v) {
 
-            $app_name = (string)$data->name;
-            $attr_name = (string)$v->attributes()->name;
-            $app_data[$app_name][$attr_name]['val'] = (string)$v->attributes()->formatted_metric_value;
-            $app_data[$app_name][$attr_name]['mval'] = (string)$v->attributes()->metric_value;
-            $app_data[$app_name][$attr_name]['thresh'] = (string)$v->attributes()->threshold_value;
-            $app_data[$app_name]['AppID'] = (string)$data->id;
+          $app_name = (string) $data->name;
+          $attr_name = (string) $v->attributes()->name;
+          $app_data[$app_name][$attr_name]['val'] = (string) $v->attributes()->formatted_metric_value;
+          $app_data[$app_name][$attr_name]['mval'] = (string) $v->attributes()->metric_value;
+          $app_data[$app_name][$attr_name]['thresh'] = (string) $v->attributes()->threshold_value;
+          $app_data[$app_name]['AppID'] = (string) $data->id;
 
-          }
+        }
 
       }
     }
@@ -133,20 +133,17 @@ function new_relic_rpm_render_health($app_health) {
       }
       $row[] = $cell;
     }
-    $row[] = l('Details', 'admin/reports/new-relic-rpm/details/' . $cust_id . '/'. $v['AppID'], array('query' => array('app_name' => $k)));
+    $row[] = l('Details', 'admin/reports/new-relic-rpm/details/' . $cust_id . '/' . $v['AppID'], array('query' => array('app_name' => $k)));
     $table['rows'][] = $row;
   }
 
-  return theme_table($table['header'], $table['rows']);
+  return theme('table', $table);
 }
 
 /**
  * Render the quick actions menu.
  */
 function new_relic_rpm_render_actions($cust_id, $app_id) {
-
-  $output = '<h2>Quick Links for this Application</h2>';
-  $output .= '<p>Links open New Relic\'s website in a new window.</p>';
 
   $rpm_url = "https://rpm.newrelic.com/accounts/{$cust_id}/applications/{$app_id}";
   $actions = array(
@@ -158,15 +155,25 @@ function new_relic_rpm_render_actions($cust_id, $app_id) {
     'edit_alerts' => t('App Alerts & Thresholds'),
     'deployments' => t('Deployments'),
   );
-  $links = array(array('title' => t("Overview"), 'href' => $rpm_url, 'attributes' => array('class' => '_blank')));
+  $links = array(
+    'overview' => array(
+      'title' => t("Overview"),
+      'href' => $rpm_url,
+      'attributes' => array('class' => '_blank'),
+    )
+  );
   foreach ($actions as $action => $title) {
-    $links[$action]= array(
+    $links[$action] = array(
       'title' => $title,
       'href' => "{$rpm_url}/{$action}",
       'attributes' => array('target' => '_blank'),
     );
   }
-  $output .= theme_links($links, array());
 
-  return $output;
+  $list = array(
+    'heading' => t('Links to New Relic\'s website for this Application'),
+    'links' => $links,
+  );
+
+  return theme('links', $list);
 }

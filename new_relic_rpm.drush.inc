@@ -5,7 +5,7 @@
  */
 
 /**
- * Implementation of hook_drush_init().
+ * Implements hook_drush_init().
  */
 function new_relic_rpm_drush_init() {
   // Make sure we have access to the needed functions.
