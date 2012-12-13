@@ -262,7 +262,7 @@ function new_relic_rpm_curl($url, $post = array()) {
   $api_key = variable_get('new_relic_rpm_api_key', '');
 
   // Set the header with the API key.
-  $headers[] = "http-x-license-key: {$api_key}";
+  $headers[] = "x-api-key: {$api_key}";
 
   // Set up the cURL request.
   $ch = curl_init();
