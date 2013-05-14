@@ -148,6 +148,39 @@ function new_relic_rpm_boot() {
 }
 
 /**
+ * Implements hook_watchdog().
+ */
+function new_relic_rpm_watchdog(array $log_entry) {
+  global $base_url;
+
+  // Check if the severity is supposed to be logged.
+  if (!in_array($log_entry['severity'], variable_get('new_relic_rpm_watchdog_severities', array()))) {
+    return;
+  }
+
+  $severity_list = watchdog_severity_levels();
+
+  $message = "Site: @base_url | Severity: (@severity) @severity_desc | Timestamp: @timestamp | Type: @type | IP Address: @ip | Request URI:  @request_uri | Referrer URI: @referer_uri | User: (@uid) @name | Link: @link | Message: @message";
+
+  $message = strtr($message, array(
+    '@base_url' => $base_url,
+    '@severity' => $log_entry['severity'],
+    '@severity_desc' => $severity_list[$log_entry['severity']],
+    '@timestamp' => format_date($log_entry['timestamp']),
+    '@type' => $log_entry['type'],
+    '@ip' => $log_entry['ip'],
+    '@request_uri' => $log_entry['request_uri'],
+    '@referer_uri' => $log_entry['referer'],
+    '@uid' => $log_entry['uid'],
+    '@name' => $log_entry['user']->name,
+    '@link' => strip_tags($log_entry['link']),
+    '@message' => strip_tags(strtr($log_entry['message'], $log_entry['variables'])),
+  ));
+
+  newrelic_notice_error($message);
+}
+
+/**
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */

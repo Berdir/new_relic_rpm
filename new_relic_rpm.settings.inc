@@ -76,6 +76,15 @@ function new_relic_rpm_settings($form, &$form_state) {
     '#default_value' => variable_get('new_relic_rpm_api_key', ''),
   );
 
+  $form['new_relic_rpm_watchdog_severities'] = array(
+    '#type' => 'select',
+    '#multiple' => TRUE,
+    '#title' => t('Forward watchdog messages'),
+    '#description' => t('Select which watchdog severities should be forwarded to New Relic API as errors.'),
+    '#options' => watchdog_severity_levels(),
+    '#default_value' => variable_get('new_relic_rpm_watchdog_severities', array()),
+  );
+
   $form['new_relic_rpm_override_exception_handler'] = array(
     '#type' => 'checkbox',
     '#title' => t('Override exception handler'),
