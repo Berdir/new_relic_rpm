@@ -76,6 +76,13 @@ function new_relic_rpm_settings($form, &$form_state) {
     '#default_value' => variable_get('new_relic_rpm_api_key', ''),
   );
 
+  $form['new_relic_rpm_override_exception_handler'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Override exception handler'),
+    '#description' => t('Check to override default Drupal exception handler and to have exceptions passed to New Relic'),
+    '#default_value' => variable_get('new_relic_rpm_override_exception_handler', FALSE),
+  );
+
   return system_settings_form($form);
 }
 
