@@ -153,6 +153,11 @@ function new_relic_rpm_boot() {
 function new_relic_rpm_watchdog(array $log_entry) {
   global $base_url;
 
+  // Skip if already logged.
+  if (!empty($log_entry['new_relic_already_logged'])) {
+    return;
+  }
+
   // Check if the severity is supposed to be logged.
   if (!in_array($log_entry['severity'], variable_get('new_relic_rpm_watchdog_severities', array()))) {
     return;
