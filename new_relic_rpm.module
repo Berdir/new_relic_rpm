@@ -154,7 +154,7 @@ function new_relic_rpm_watchdog(array $log_entry) {
   global $base_url;
 
   // Skip if already logged.
-  if (!empty($log_entry['new_relic_already_logged'])) {
+  if (!empty($log_entry['variables']['new_relic_already_logged'])) {
     return;
   }
 
@@ -165,21 +165,18 @@ function new_relic_rpm_watchdog(array $log_entry) {
 
   $severity_list = watchdog_severity_levels();
 
-  $message = "Site: @base_url | Severity: (@severity) @severity_desc | Timestamp: @timestamp | Type: @type | IP Address: @ip | Request URI:  @request_uri | Referrer URI: @referer_uri | User: (@uid) @name | Link: @link | Message: @message";
+  $message = "@message | Severity: (@severity) @severity_desc | Type: @type | Request URI:  @request_uri | Referrer URI: @referer_uri | User: (@uid) @name | IP Address: @ip";
 
   $message = strtr($message, array(
-    '@base_url' => $base_url,
     '@severity' => $log_entry['severity'],
     '@severity_desc' => $severity_list[$log_entry['severity']],
-    '@timestamp' => format_date($log_entry['timestamp']),
     '@type' => $log_entry['type'],
     '@ip' => $log_entry['ip'],
     '@request_uri' => $log_entry['request_uri'],
     '@referer_uri' => $log_entry['referer'],
     '@uid' => $log_entry['uid'],
     '@name' => $log_entry['user']->name,
-    '@link' => strip_tags($log_entry['link']),
-    '@message' => strip_tags(strtr($log_entry['message'], $log_entry['variables'])),
+    '@message' => strip_tags(strtr($log_entry['message'], is_array($log_entry['variables']) ? $log_entry['variables'] : array())),
   ));
 
   newrelic_notice_error($message);
